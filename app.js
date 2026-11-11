@@ -307,4 +307,12 @@ window.addEventListener('online', () => state.view === 'browse' && loadStations(
 buildTags();
 loadCountries().then(loadStations);
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  // After an app update, reload once so the new files are used (never mid-playback).
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController && !reloaded && audio.paused) { reloaded = true; location.reload(); }
+  });
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}

@@ -1,5 +1,5 @@
 'use strict';
-const VERSION = 'v3';
+const VERSION = 'v4';
 const SHELL = `shell-${VERSION}`;
 const API = `api-${VERSION}`;
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest',
@@ -22,7 +22,7 @@ self.addEventListener('fetch', (e) => {
     if (url.pathname.startsWith('/json/url/')) return;                // click-count pings
     e.respondWith(staleWhileRevalidate(req, API));                   // directory data: fast + offline
   } else if (url.origin === location.origin) {
-    e.respondWith(caches.match(req).then((hit) => hit || fetch(req)));
+    e.respondWith(networkFirst(req));                                // app files: always fresh when online
   }
   // anything else (station streams, logos, hls.js) goes straight to the network
 });
@@ -32,4 +32,12 @@ async function staleWhileRevalidate(req, name) {
   const hit = await cache.match(req);
   const net = fetch(req).then((r) => { if (r.ok) cache.put(req, r.clone()); return r; });
   return hit || net;
+}
+
+async function networkFirst(req) {
+  try {
+    const r = await fetch(req);
+    if (r.ok) { const copy = r.clone(); caches.open(SHELL).then((c) => c.put(req, copy)); }
+    return r;
+  } catch { return (await caches.match(req)) || Response.error(); }
 }
