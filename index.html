@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web Radio – NZ &amp; the World</title>
+<meta name="description" content="Listen to live radio from New Zealand and around the world.">
+<meta name="theme-color" content="#0f1b2d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img src="icons/icon.svg" alt="" width="28" height="28"><h1>Web Radio</h1></div>
+  <div class="controls">
+    <label class="sr-only" for="country">Country</label>
+    <select id="country" aria-label="Country"><option value="NZ">🇳🇿 New Zealand</option></select>
+    <label class="sr-only" for="search">Search stations</label>
+    <input id="search" type="search" placeholder="Search stations…" autocomplete="off">
+    <button id="surprise" class="ghost" title="Play a random station">🎲 Surprise me</button>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-browse" aria-selected="true">Browse</button>
+    <button role="tab" id="tab-favs" aria-selected="false">★ Favourites <span id="favcount"></span></button>
+  </nav>
+  <div id="tags" class="chips" aria-label="Genres"></div>
+</header>
+
+<main>
+  <p id="status" role="status" aria-live="polite"></p>
+  <ul id="list" class="list"></ul>
+</main>
+
+<footer class="player" id="player" hidden>
+  <img id="p-icon" alt="" width="48" height="48">
+  <div class="meta"><strong id="p-name">—</strong><span id="p-sub"></span></div>
+  <div class="btns">
+    <button id="p-prev" class="ghost" aria-label="Previous station">⏮</button>
+    <button id="p-play" class="main" aria-label="Play">▶</button>
+    <button id="p-next" class="ghost" aria-label="Next station">⏭</button>
+  </div>
+  <div class="extra">
+    <label class="sr-only" for="vol">Volume</label>
+    <input id="vol" type="range" min="0" max="1" step="0.01" value="1">
+    <label class="sr-only" for="sleep">Sleep timer</label>
+    <select id="sleep" aria-label="Sleep timer">
+      <option value="0">😴 Off</option><option value="15">15 min</option>
+      <option value="30">30 min</option><option value="60">60 min</option><option value="90">90 min</option>
+    </select>
+  </div>
+</footer>
+
+<div id="toast" role="alert"></div>
+<audio id="audio" preload="none"></audio>
+<script src="app.js"></script>
+</body>
+</html>
