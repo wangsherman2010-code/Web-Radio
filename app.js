@@ -73,7 +73,7 @@ async function loadStations() {
     const cached = store.get(key, null);
     if (cached) { state.stations = cached; setStatus('Offline – showing saved list.'); render(true); return; }
     state.stations = [];
-    setStatus('Couldn’t reach the station directory. Check your connection and try again.');
+    showFailure();
     render(true); return;
   }
   render();
@@ -86,6 +86,21 @@ const slim = (s) => ({
 
 /* ---------- Rendering ---------- */
 function setStatus(t) { $('status').textContent = t; }
+
+/* Explain a failed directory load so the cause can be found on old phones. */
+function showFailure() {
+  const box = $('status'); box.textContent = '';
+  const p = (t) => { const e = document.createElement('div'); e.textContent = t; box.append(e); return e; };
+  p('Couldn’t reach the station directory.');
+  p('Phone date and time: ' + new Date().toLocaleString() + ' (a wrong clock breaks secure connections)');
+  p('Online: ' + (navigator.onLine ? 'yes' : 'no – check Wi-Fi and airplane mode'));
+  p('Tap to test the connection. A text page means it works; a security warning means this phone doesn’t trust the server:');
+  for (const h of API_HOSTS.slice(1, 3)) {
+    const a = document.createElement('a'); a.href = h + '/json/countries?limit=1'; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = h.replace('https://', ''); a.style.display = 'block'; box.append(a);
+  }
+  const b = document.createElement('button'); b.className = 'ghost'; b.textContent = 'Try again'; b.onclick = loadStations; box.append(b);
+}
 
 function visible() {
   if (state.view === 'favs') {
